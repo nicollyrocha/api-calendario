@@ -18,8 +18,7 @@ exports.createUser = async (req: any, res: any) => {
 		});
 	} else {
 		await db.query(
-			'INSERT INTO users (email, password, name) VALUES ($1, $2, $3)',
-			[email, hash, name]
+			`INSERT INTO users (email, password, name) VALUES ('${email}', '${password}', '${name}')`
 		);
 		res.status(201).send({
 			message: 'User added successfully!',
@@ -43,16 +42,28 @@ exports.login = async (req: any, res: any) => {
 		const isSame = bcrypt.compareSync(password, db_password);
 		if (isSame) {
 			return res.status(201).send({
-				message: 'User added successfully!',
+				message: 'Logged successfully!',
 				body: {
 					user: rows[0],
 				},
+				status: 201,
 			});
 		} else {
-			return res.status(401).send('E-mail ou senha incorretos.');
+			return res.status(401).send({
+				message: 'E-mail ou senha incorretos.',
+				body: {
+					user: rows[0],
+				},
+				status: 401,
+			});
 		}
 	} else {
-		return res.status(401).send('E-mail ou senha incorretos.');
+		return res.status(401).send({
+			message: 'E-mail ou senha incorretos.',
+			body: {
+				user: rows[0],
+			},
+		});
 	}
 };
 
@@ -69,7 +80,9 @@ exports.getUser = async (req: any, res: any) => {
 			},
 		});
 	} else {
-		return res.status(401).send('Usuário não encontrado');
+		return res.status(401).send({
+			message: 'Usuário não encontrado.',
+		});
 	}
 };
 
