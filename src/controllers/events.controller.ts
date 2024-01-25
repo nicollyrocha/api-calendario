@@ -3,22 +3,22 @@ import { Events } from '../events.model';
 const db = require('../config/database');
 
 exports.createEvent = async (req: any, res: any) => {
-	const { nameEvent, description, dateStart, datEnd, idUser } = req.body;
+	const { nameEvent, description, dateStart, dateEnd, idUser } = req.body;
 
 	const { rows } = await db.query(
-		`SELECT * FROM events WHERE id_user = '${idUser}' AND date_end >= '${dateStart}' AND date_start <= '${datEnd}'`
+		`SELECT * FROM events WHERE id_user = '${idUser}' AND date_end >= '${dateStart}' AND date_start <= '${dateEnd}'`
 	);
 	if (rows.length > 0) {
 		console.log('aaa', rows);
 		return res.status(401).send('Eventos conflitantes');
 	}
 	await db.query(
-		`INSERT INTO events (name_event, description, date_start, date_end, id_user) VALUES ('${nameEvent}', '${description}', '${dateStart}', '${datEnd}', '${idUser}')`
+		`INSERT INTO events (name_event, description, date_start, date_end, id_user) VALUES ('${nameEvent}', '${description}', '${dateStart}', '${dateEnd}', '${idUser}')`
 	);
 	return res.status(201).send({
 		message: 'Event added successfully!',
 		body: {
-			user: { nameEvent, description, dateStart, datEnd, idUser },
+			user: { nameEvent, description, dateStart, dateEnd, idUser },
 		},
 	});
 };

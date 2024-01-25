@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const db = require('../config/database');
 const jwt = require('jsonwebtoken');
+const express = require('express');
+const app = express();
 
 exports.createUser = async (req: any, res: any) => {
 	const { name, email, password } = req.body;
@@ -40,24 +42,12 @@ exports.login = async (req: any, res: any) => {
 
 		const isSame = bcrypt.compareSync(password, db_password);
 		if (isSame) {
-			let token = jwt.sign({ id: rows[0].id }, process.env.JWT_SECRET, {
-				expiresIn: 1 * 24 * 60 * 60 * 1000,
+			return res.status(201).send({
+				message: 'User added successfully!',
+				body: {
+					user: rows[0],
+				},
 			});
-			res.cookie('jwt', token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
-
-			return res
-				.cookie('token', token, {
-					expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-					secure: false,
-					httpOnly: true,
-				})
-				.status(201)
-				.send({
-					message: 'User added successfully!',
-					body: {
-						user: rows[0],
-					},
-				});
 		} else {
 			return res.status(401).send('E-mail ou senha incorretos.');
 		}
@@ -82,3 +72,5 @@ exports.getUser = async (req: any, res: any) => {
 		return res.status(401).send('Usuário não encontrado');
 	}
 };
+
+export {};
